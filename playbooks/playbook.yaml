@@ -1,0 +1,16 @@
+---
+- hosts: webservers
+  remote_user: dlorenc
+  tasks:
+  - name: copy docker image
+    command: gsutil cp gs://dockerize-builds/dockerize_{{ version }}.tar.gz .
+  - name: docker load the image
+    command: docker load -i dockerize_{{ version }}.tar.gz
+    sudo: yes
+  - name: docker stop the old version
+    shell: "docker stop $(docker ps | grep dockerize_ | awk '{ print $1 }')"
+    sudo: yes
+    ignore_errors: yes
+  - name: docker run the new version
+    command: docker run -d -p 8080:8080 dockerize_{{ version }}
+    sudo: yes
