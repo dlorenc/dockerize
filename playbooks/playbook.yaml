@@ -1,5 +1,7 @@
 ---
-- hosts: webservers
+- name: Copy New Image
+  hosts: webservers
+  gather_facts: False 
   remote_user: dlorenc
   tasks:
   - name: copy docker image
@@ -7,6 +9,17 @@
   - name: docker load the image
     command: docker load -i dockerize_{{ version }}.tar.gz
     sudo: yes
+  - name: delete the tar.gz
+    command: rm dockerize_{{ version }}.tar.gz
+
+- name: Deploy
+  hosts: webservers
+  gather_facts: False
+  serial: 1
+  tasks:
+  # - name: take the server out of load balancing
+  #   shell: gcloud compute target-pools remove-instances webservers --instances $(hostname) --zone=us-central1-f
+
   - name: docker stop the old version
     shell: "docker stop $(docker ps | grep dockerize_ | awk '{ print $1 }')"
     sudo: yes
@@ -14,3 +27,6 @@
   - name: docker run the new version
     command: docker run -d -p 8080:8080 dockerize_{{ version }}
     sudo: yes
+
+  # - name: add the server into load balancing
+  #   shell: gcloud compute target-pools add-instances webservers --instances $(hostname) --zone=us-central1-f
