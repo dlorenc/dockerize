@@ -25,7 +25,7 @@
     sudo: yes
     ignore_errors: yes
   - name: docker run the new version
-    command: docker run -d -p 8080:8080 dockerize_{{ version }}
+    command: docker run -d -p 80:8080 dockerize_{{ version }}
     sudo: yes
 
   # - name: add the server into load balancing
