@@ -14,11 +14,13 @@
 
 - name: Deploy
   hosts: webservers
-  gather_facts: False
   serial: 1
   tasks:
+  # Taking the server in and out of load balancing slows down the demo a bit.
+  # This takes ~2 minutes with these in, and ~40s with them out.
   # - name: take the server out of load balancing
-  #   shell: gcloud compute target-pools remove-instances webservers --instances $(hostname) --zone=us-central1-f
+  #   shell: gcloud compute target-pools remove-instances webservers --instances {{ ansible_hostname }} --zone=us-central1-f
+  #   delegate_to: 127.0.0.1
 
   - name: docker stop the old version
     shell: "docker stop $(docker ps | grep dockerize_ | awk '{ print $1 }')"
@@ -29,4 +31,5 @@
     sudo: yes
 
   # - name: add the server into load balancing
-  #   shell: gcloud compute target-pools add-instances webservers --instances $(hostname) --zone=us-central1-f
+  #   shell: gcloud compute target-pools add-instances webservers --instances {{ ansible_hostname }} --zone=us-central1-f
+  #   delegate_to: 127.0.0.1
