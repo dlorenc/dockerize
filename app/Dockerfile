@@ -1,13 +1,12 @@
 FROM dockerfile/nodejs
 
-WORKDIR /app
 EXPOSE 8080
 
 # Install dependencies
-ADD package.json /app/package.json
+ADD package.json /data/
 RUN npm install
 
 # Add the application
-ADD . /app
+ADD . /data/
 
 CMD ["npm", "start"]
